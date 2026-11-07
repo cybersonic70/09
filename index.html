@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Neon Health Calculator</title>
+
+<style>
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+    font-family:Arial, sans-serif;
+}
+
+body{
+    min-height:100vh;
+    background:
+        radial-gradient(circle at top,#102050 0%,#050817 45%,#02030a 100%);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    overflow:hidden;
+}
+
+body::before{
+    content:"";
+    position:fixed;
+    width:500px;
+    height:500px;
+    background:#00f7ff;
+    filter:blur(180px);
+    opacity:.12;
+    top:-200px;
+    left:-150px;
+}
+
+body::after{
+    content:"";
+    position:fixed;
+    width:450px;
+    height:450px;
+    background:#b000ff;
+    filter:blur(180px);
+    opacity:.12;
+    bottom:-200px;
+    right:-150px;
+}
+
+.container{
+    width:420px;
+    max-width:92%;
+    padding:30px;
+    border:1px solid #00f7ff;
+    border-radius:25px;
+    background:rgba(5,10,30,.72);
+    box-shadow:
+        0 0 20px #00f7ff55,
+        0 0 60px #8a00ff33,
+        inset 0 0 30px #00f7ff0d;
+    backdrop-filter:blur(15px);
+    position:relative;
+    z-index:2;
+}
+
+h1{
+    text-align:center;
+    font-size:30px;
+    color:#00f7ff;
+    text-shadow:
+        0 0 8px #00f7ff,
+        0 0 25px #00f7ff;
+    margin-bottom:8px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#aaa;
+    margin-bottom:25px;
+}
+
+.input-box{
+    margin-bottom:18px;
+}
+
+label{
+    display:block;
+    margin-bottom:7px;
+    color:#00f7ff;
+    text-shadow:0 0 8px #00f7ff;
+}
+
+input, select{
+    width:100%;
+    padding:14px;
+    border-radius:12px;
+    border:1px solid #00f7ff;
+    background:#050b20;
+    color:white;
+    outline:none;
+    font-size:16px;
+    box-shadow:0 0 10px #00f7ff22;
+}
+
+input:focus, select:focus{
+    box-shadow:
+        0 0 10px #00f7ff,
+        0 0 25px #00f7ff44;
+}
+
+button{
+    width:100%;
+    padding:15px;
+    margin-top:5px;
+    border:none;
+    border-radius:14px;
+    background:linear-gradient(90deg,#00f7ff,#8a00ff);
+    color:white;
+    font-size:17px;
+    font-weight:bold;
+    cursor:pointer;
+    box-shadow:
+        0 0 15px #00f7ff,
+        0 0 30px #8a00ff55;
+    transition:.25s;
+}
+
+button:hover{
+    transform:scale(1.03);
+    box-shadow:
+        0 0 25px #00f7ff,
+        0 0 45px #8a00ff;
+}
+
+.result{
+    display:none;
+    margin-top:22px;
+    padding:20px;
+    border-radius:18px;
+    border:1px solid #8a00ff;
+    background:rgba(20,5,40,.7);
+    text-align:center;
+    box-shadow:0 0 25px #8a00ff44;
+}
+
+.result h2{
+    color:#b900ff;
+    text-shadow:0 0 10px #b900ff;
+    margin-bottom:12px;
+}
+
+.bmi{
+    font-size:42px;
+    font-weight:bold;
+    color:#00f7ff;
+    text-shadow:0 0 15px #00f7ff;
+}
+
+.status{
+    margin-top:10px;
+    font-size:19px;
+    font-weight:bold;
+}
+
+.info{
+    margin-top:12px;
+    color:#bbb;
+    font-size:13px;
+    line-height:1.6;
+}
+
+.warning{
+    margin-top:15px;
+    font-size:12px;
+    color:#aaa;
+}
+
+.reset{
+    background:transparent;
+    border:1px solid #00f7ff;
+    color:#00f7ff;
+    box-shadow:none;
+    margin-top:12px;
+}
+
+.reset:hover{
+    background:#00f7ff15;
+    box-shadow:0 0 15px #00f7ff;
+}
+
+@media(max-width:500px){
+    .container{
+        padding:22px;
+    }
+
+    h1{
+        font-size:25px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>⚡ NEON HEALTH</h1>
+    <p class="subtitle">حاسبة صحية بتصميم Neon</p>
+
+    <div class="input-box">
+        <label>🎂 العمر</label>
+        <input type="number" id="age" placeholder="مثال: 17" min="1" max="120">
+    </div>
+
+    <div class="input-box">
+        <label>📏 الطول (cm)</label>
+        <input type="number" id="height" placeholder="مثال: 170" min="50" max="250">
+    </div>
+
+    <div class="input-box">
+        <label>⚖️ الوزن (kg)</label>
+        <input type="number" id="weight" placeholder="مثال: 65" min="10" max="300">
+    </div>
+
+    <div class="input-box">
+        <label>👤 الجنس</label>
+        <select id="gender">
+            <option value="">اختار</option>
+            <option value="male">ذكر</option>
+            <option value="female">أنثى</option>
+        </select>
+    </div>
+
+    <button onclick="calculate()">احسب النتيجة ⚡</button>
+
+    <div class="result" id="result">
+
+        <h2>النتيجة</h2>
+
+        <div class="bmi" id="bmiValue">0</div>
+
+        <div class="status" id="status"></div>
+
+        <div class="info" id="info"></div>
+
+        <div class="warning">
+            ⚠️ BMI مجرد مؤشر عام، وبالنسبة للمراهقين التقييم الدقيق كيحتاج العمر والجنس ومراحل النمو.
+        </div>
+
+        <button class="reset" onclick="resetCalc()">إعادة الحساب</button>
+
+    </div>
+
+</div>
+
+<script>
+
+function calculate(){
+
+    let age = Number(document.getElementById("age").value);
+    let height = Number(document.getElementById("height").value);
+    let weight = Number(document.getElementById("weight").value);
+    let gender = document.getElementById("gender").value;
+
+    if(!age || !height || !weight || !gender){
+        alert("عمرّ جميع المعلومات أولاً ⚠️");
+        return;
+    }
+
+    let heightMeter = height / 100;
+    let bmi = weight / (heightMeter * heightMeter);
+
+    document.getElementById("bmiValue").textContent = bmi.toFixed(1);
+
+    let status = "";
+    let info = "";
+
+    if(age < 18){
+
+        status = "🧒 تقييم خاص بالمراهقين";
+
+        info = "حيت العمر أقل من 18 سنة، ما يمكنش نحكم على الوزن بأنه مناسب أو غير مناسب باستعمال BMI ديال الكبار فقط. التقييم الصحيح كيكون باستعمال منحنيات النمو حسب العمر والجنس.";
+
+    }else{
+
+        if(bmi < 18.5){
+            status = "⬇️ أقل من النطاق المعتاد";
+            info = "النتيجة أقل من النطاق المعتاد للبالغين.";
+        }
+        else if(bmi < 25){
+            status = "🟢 ضمن النطاق المعتاد";
+            info = "النتيجة داخل النطاق المعتاد للبالغين.";
+        }
+        else if(bmi < 30){
+            status = "🟠 أعلى من النطاق المعتاد";
+            info = "النتيجة أعلى من النطاق المعتاد للبالغين.";
+        }
+        else{
+            status = "🔴 مرتفع";
+            info = "النتيجة مرتفعة حسب تصنيف BMI للبالغين.";
+        }
+
+    }
+
+    document.getElementById("status").textContent = status;
+    document.getElementById("info").textContent = info;
+    document.getElementById("result").style.display = "block";
+}
+
+function resetCalc(){
+
+    document.getElementById("age").value = "";
+    document.getElementById("height").value = "";
+    document.getElementById("weight").value = "";
+    document.getElementById("gender").value = "";
+
+    document.getElementById("result").style.display = "none";
+}
+
+</script>
+
+</body>
+</html>
